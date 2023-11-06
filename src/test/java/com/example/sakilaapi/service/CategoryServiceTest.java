@@ -24,7 +24,7 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceTest {
 
-    private static final Long ACTOR_ID = 1L;
+    private static final Long CATEGORY_ID = 1L;
     @Mock
     private CategoryRepository categoryRepository;
 
@@ -68,10 +68,10 @@ class CategoryServiceTest {
 
         when(categoryRepository.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(category));
 
-        CategoryDto foundedCategory = categoryService.getCategoryById(ACTOR_ID);
+        CategoryDto foundedCategory = categoryService.getCategoryById(CATEGORY_ID);
 
         Assertions.assertThat(foundedCategory).isNotNull();
-        Assertions.assertThat(foundedCategory.getCategory_id()).isEqualTo(ACTOR_ID);
+        Assertions.assertThat(foundedCategory.getCategory_id()).isEqualTo(CATEGORY_ID);
     }
 
     @Test
@@ -80,10 +80,10 @@ class CategoryServiceTest {
         when(categoryRepository.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(category));
         when(categoryRepository.save(Mockito.any(Category.class))).thenReturn(category);
 
-        CategoryDto updatedCategory = categoryService.updateCategory(ACTOR_ID, categoryDto);
+        CategoryDto updatedCategory = categoryService.updateCategory(CATEGORY_ID, categoryDto);
 
         Assertions.assertThat(updatedCategory).isNotNull();
-        Assertions.assertThat(updatedCategory.getCategory_id()).isEqualTo(ACTOR_ID);
+        Assertions.assertThat(updatedCategory.getCategory_id()).isEqualTo(CATEGORY_ID);
     }
 
     @Test
@@ -91,7 +91,7 @@ class CategoryServiceTest {
 
         when(categoryRepository.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(category));
 
-        assertAll(() -> categoryService.deleteCategory(ACTOR_ID));
+        assertAll(() -> categoryService.deleteCategory(CATEGORY_ID));
     }
 
 }
