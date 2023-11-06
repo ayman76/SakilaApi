@@ -25,7 +25,7 @@ import static org.mockito.Mockito.when;
 class CountryServiceTest {
 
 
-    private static final Long ACTOR_ID = 1L;
+    private static final Long COUNTRY_ID = 1L;
     @Mock
     private CountryRepository countryRepository;
 
@@ -69,10 +69,10 @@ class CountryServiceTest {
 
         when(countryRepository.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(country));
 
-        CountryDto foundedCountry = countryService.getCountryById(ACTOR_ID);
+        CountryDto foundedCountry = countryService.getCountryById(COUNTRY_ID);
 
         Assertions.assertThat(foundedCountry).isNotNull();
-        Assertions.assertThat(foundedCountry.getCountry_id()).isEqualTo(ACTOR_ID);
+        Assertions.assertThat(foundedCountry.getCountry_id()).isEqualTo(COUNTRY_ID);
     }
 
     @Test
@@ -81,10 +81,10 @@ class CountryServiceTest {
         when(countryRepository.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(country));
         when(countryRepository.save(Mockito.any(Country.class))).thenReturn(country);
 
-        CountryDto updatedCountry = countryService.updateCountry(ACTOR_ID, countryDto);
+        CountryDto updatedCountry = countryService.updateCountry(COUNTRY_ID, countryDto);
 
         Assertions.assertThat(updatedCountry).isNotNull();
-        Assertions.assertThat(updatedCountry.getCountry_id()).isEqualTo(ACTOR_ID);
+        Assertions.assertThat(updatedCountry.getCountry_id()).isEqualTo(COUNTRY_ID);
     }
 
     @Test
@@ -92,7 +92,7 @@ class CountryServiceTest {
 
         when(countryRepository.findById(Mockito.anyLong())).thenReturn(Optional.ofNullable(country));
 
-        assertAll(() -> countryService.deleteCountry(ACTOR_ID));
+        assertAll(() -> countryService.deleteCountry(COUNTRY_ID));
     }
 
 }
