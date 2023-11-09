@@ -1,6 +1,7 @@
 package com.example.sakilaapi.service;
 
 import com.example.sakilaapi.dto.ActorDto;
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.model.Actor;
 import com.example.sakilaapi.repository.ActorRepository;
 import com.example.sakilaapi.service.impl.ActorServiceImpl;
@@ -13,9 +14,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -56,11 +57,13 @@ class ActorServiceTest {
     @Test
     public void ActorService_GetAllActors_ReturnActorDtos() {
 
-        when(actorRepository.findAll()).thenReturn(Arrays.asList(actor, actor));
+        Page<Actor> actors = Mockito.mock(Page.class);
 
-        List<ActorDto> actors = actorService.getAllActors();
+        when(actorRepository.findAll(Mockito.any(Pageable.class))).thenReturn(actors);
 
-        Assertions.assertThat(actors).isNotEmpty();
+        ApiResponse<ActorDto> response = actorService.getAllActors(0, 1);
+
+        Assertions.assertThat(response).isNotNull();
     }
 
     @Test

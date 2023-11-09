@@ -1,15 +1,20 @@
 package com.example.sakilaapi.service.impl;
 
 import com.example.sakilaapi.dto.ActorDto;
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.model.Actor;
 import com.example.sakilaapi.repository.ActorRepository;
 import com.example.sakilaapi.service.ActorService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.example.sakilaapi.utils.HelperFunctions.getApiResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +30,14 @@ public class ActorServiceImpl implements ActorService {
     }
 
     @Override
-    public List<ActorDto> getAllActors() {
-        return actorRepository.findAll().stream().map(a -> modelMapper.map(a, ActorDto.class)).collect(Collectors.toList());
+    public ApiResponse<ActorDto> getAllActors(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Actor> actors = actorRepository.findAll(pageable);
+        List<Actor> listOfActors = actors.getContent();
+        List<ActorDto> content = listOfActors.stream().map(c -> modelMapper.map(c, ActorDto.class)).toList();
+
+
+        return getApiResponse(pageNo, pageSize, content, actors);
     }
 
     @Override

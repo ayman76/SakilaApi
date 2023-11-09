@@ -21,6 +21,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.example.sakilaapi.utils.HelperFunctions.getApiResponse;
+
 @Service
 @RequiredArgsConstructor
 public class FilmServiceImpl implements FilmService {
@@ -30,16 +32,7 @@ public class FilmServiceImpl implements FilmService {
     private final ActorRepository actorRepository;
     private final CategoryRepository categoryRepository;
 
-    private static ApiResponse<FilmDto> getApiResponse(int pageNo, int pageSize, List<FilmDto> content, Page<Film> films) {
-        ApiResponse<FilmDto> filmDtoApiResponse = new ApiResponse<>();
-        filmDtoApiResponse.setContent(content);
-        filmDtoApiResponse.setPageNo(pageNo);
-        filmDtoApiResponse.setPageSize(pageSize);
-        filmDtoApiResponse.setTotalElements(films.getTotalElements());
-        filmDtoApiResponse.setTotalPages(films.getTotalPages());
-        filmDtoApiResponse.setLast(films.isLast());
-        return filmDtoApiResponse;
-    }
+
 
     @Override
     public FilmDto createFilm(FilmRequestDto filmDto) {

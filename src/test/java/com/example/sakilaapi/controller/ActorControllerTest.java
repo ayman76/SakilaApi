@@ -1,6 +1,7 @@
 package com.example.sakilaapi.controller;
 
 import com.example.sakilaapi.dto.ActorDto;
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.service.ActorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.CoreMatchers;
@@ -19,9 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -43,11 +42,19 @@ class ActorControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     private ActorDto actorDto;
+    private ApiResponse<ActorDto> responseDto;
 
 
     @BeforeEach
     public void setup() {
+        responseDto = new ApiResponse<>();
         actorDto = ActorDto.builder().actor_id(1L).first_name("ayman").last_name("mohamed").build();
+        responseDto.setContent(Arrays.asList(actorDto, actorDto));
+        responseDto.setPageSize(10);
+        responseDto.setPageNo(0);
+        responseDto.setTotalPages(10);
+        responseDto.setTotalElements(100L);
+        responseDto.setLast(false);
     }
 
     @Test
@@ -64,14 +71,13 @@ class ActorControllerTest {
 
     @Test
     public void ActorController_GetAllActors_ReturnIsOk() throws Exception {
-        List<ActorDto> actorDtos = new ArrayList<>(Arrays.asList(actorDto, actorDto));
-        when(actorService.getAllActors()).thenReturn(actorDtos);
+        when(actorService.getAllActors(Mockito.anyInt(), Mockito.anyInt())).thenReturn(responseDto);
 
         ResultActions response = mockMvc.perform(get(URL)
                 .contentType(MediaType.APPLICATION_JSON));
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", CoreMatchers.is(actorDtos.size())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content.size()", CoreMatchers.is(responseDto.getContent().size())))
                 .andDo(MockMvcResultHandlers.print());
     }
 
