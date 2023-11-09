@@ -1,13 +1,12 @@
 package com.example.sakilaapi.service;
 
 import com.example.sakilaapi.dto.AddressDto;
-
-import java.util.List;
+import com.example.sakilaapi.dto.ApiResponse;
 
 public interface AddressService {
     AddressDto createAddress(AddressDto addressDto);
 
-    List<AddressDto> getAllAddresses();
+    ApiResponse<AddressDto> getAllAddresses(int pageNo, int pageSize);
 
     AddressDto getAddressById(Long id);
 

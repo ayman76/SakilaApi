@@ -1,6 +1,7 @@
 package com.example.sakilaapi.controller;
 
 import com.example.sakilaapi.dto.AddressDto;
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CityDto;
 import com.example.sakilaapi.service.AddressService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,9 +21,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -44,12 +43,20 @@ class AddressControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     private AddressDto addressDto;
+    private ApiResponse<AddressDto> responseDto;
 
 
     @BeforeEach
     public void setup() {
+        responseDto = new ApiResponse<>();
         addressDto = AddressDto.builder().address_id(1L).address("address").address2("address")
                 .district("district").city(new CityDto()).phone("011235515").postal_code("0321513").build();
+        responseDto.setContent(Arrays.asList(addressDto, addressDto));
+        responseDto.setPageSize(10);
+        responseDto.setPageNo(0);
+        responseDto.setTotalPages(10);
+        responseDto.setTotalElements(100L);
+        responseDto.setLast(false);
     }
 
     @Test
@@ -64,13 +71,14 @@ class AddressControllerTest {
 
     @Test
     public void AddressController_GetAllAddresss_ReturnIsOk() throws Exception {
-        List<AddressDto> addressDtos = new ArrayList<>(Arrays.asList(addressDto, addressDto));
-        when(addressService.getAllAddresses()).thenReturn(addressDtos);
+        when(addressService.getAllAddresses(Mockito.anyInt(), Mockito.anyInt())).thenReturn(responseDto);
 
-        ResultActions response = mockMvc.perform(get(URL).contentType(MediaType.APPLICATION_JSON));
+        ResultActions response = mockMvc.perform(get(URL).contentType(MediaType.APPLICATION_JSON)
+                .param("pageNo", "0")
+                .param("pageSize", "10"));
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", CoreMatchers.is(addressDtos.size())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content.size()", CoreMatchers.is(responseDto.getContent().size())))
                 .andDo(MockMvcResultHandlers.print());
     }
 

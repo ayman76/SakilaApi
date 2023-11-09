@@ -1,6 +1,7 @@
 package com.example.sakilaapi.service.impl;
 
 import com.example.sakilaapi.dto.AddressDto;
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.model.Address;
 import com.example.sakilaapi.model.City;
 import com.example.sakilaapi.repository.AddressRepository;
@@ -8,10 +9,14 @@ import com.example.sakilaapi.repository.CityRepository;
 import com.example.sakilaapi.service.AddressService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.example.sakilaapi.utils.HelperFunctions.getApiResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +35,13 @@ public class AddressServiceImpl implements AddressService {
     }
 
     @Override
-    public List<AddressDto> getAllAddresses() {
-        return addressRepository.findAll().stream().map(c -> modelMapper.map(c, AddressDto.class)).collect(Collectors.toList());
+    public ApiResponse<AddressDto> getAllAddresses(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Address> addresses = addressRepository.findAll(pageable);
+        List<Address> listOfAddresses = addresses.getContent();
+        List<AddressDto> content = listOfAddresses.stream().map(c -> modelMapper.map(c, AddressDto.class)).toList();
+
+        return getApiResponse(pageNo, pageSize, content, addresses);
     }
 
     @Override
