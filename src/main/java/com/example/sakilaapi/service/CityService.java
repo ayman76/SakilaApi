@@ -1,13 +1,12 @@
 package com.example.sakilaapi.service;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CityDto;
-
-import java.util.List;
 
 public interface CityService {
     CityDto createCity(CityDto cityDto);
 
-    List<CityDto> getAllCities();
+    ApiResponse<CityDto> getAllCities(int pageNo, int pageSize);
 
     CityDto getCityById(Long id);
 

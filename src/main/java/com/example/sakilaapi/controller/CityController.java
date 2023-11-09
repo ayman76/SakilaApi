@@ -1,13 +1,12 @@
 package com.example.sakilaapi.controller;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CityDto;
 import com.example.sakilaapi.service.CityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,8 +20,9 @@ public class CityController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<CityDto>> getAllCategories() {
-        return new ResponseEntity<>(cityService.getAllCities(), HttpStatus.OK);
+    public ResponseEntity<ApiResponse<CityDto>> getAllCategories(@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                                                 @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        return new ResponseEntity<>(cityService.getAllCities(pageNo, pageSize), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

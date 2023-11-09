@@ -1,5 +1,6 @@
 package com.example.sakilaapi.service.impl;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CityDto;
 import com.example.sakilaapi.model.City;
 import com.example.sakilaapi.model.Country;
@@ -8,10 +9,14 @@ import com.example.sakilaapi.repository.CountryRepository;
 import com.example.sakilaapi.service.CityService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.example.sakilaapi.utils.HelperFunctions.getApiResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -30,8 +35,12 @@ public class CityServiceImpl implements CityService {
     }
 
     @Override
-    public List<CityDto> getAllCities() {
-        return cityRepository.findAll().stream().map(c -> modelMapper.map(c, CityDto.class)).collect(Collectors.toList());
+    public ApiResponse<CityDto> getAllCities(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<City> cities = cityRepository.findAll(pageable);
+        List<City> listOfCities = cities.getContent();
+        List<CityDto> content = listOfCities.stream().map(c -> modelMapper.map(c, CityDto.class)).toList();
+        return getApiResponse(pageNo, pageSize, content, cities);
     }
 
     @Override

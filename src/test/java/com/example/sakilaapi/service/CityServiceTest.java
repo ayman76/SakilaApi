@@ -1,5 +1,6 @@
 package com.example.sakilaapi.service;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CityDto;
 import com.example.sakilaapi.dto.CountryDto;
 import com.example.sakilaapi.model.City;
@@ -16,9 +17,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -67,12 +68,13 @@ class CityServiceTest {
 
     @Test
     public void CityService_GetAllCities_ReturnCityDtos() {
+        Page<City> cities = Mockito.mock(Page.class);
 
-        when(cityRepository.findAll()).thenReturn(Arrays.asList(city, city));
+        when(cityRepository.findAll(Mockito.any(Pageable.class))).thenReturn(cities);
 
-        List<CityDto> citys = cityService.getAllCities();
+        ApiResponse<CityDto> response = cityService.getAllCities(0, 10);
 
-        Assertions.assertThat(citys).isNotEmpty();
+        Assertions.assertThat(response).isNotNull();
     }
 
     @Test
