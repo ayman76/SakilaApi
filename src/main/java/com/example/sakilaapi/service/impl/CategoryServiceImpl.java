@@ -1,15 +1,20 @@
 package com.example.sakilaapi.service.impl;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CategoryDto;
 import com.example.sakilaapi.model.Category;
 import com.example.sakilaapi.repository.CategoryRepository;
 import com.example.sakilaapi.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.example.sakilaapi.utils.HelperFunctions.getApiResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +30,12 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
-    public List<CategoryDto> getAllCategories() {
-        return categoryRepository.findAll().stream().map(c -> modelMapper.map(c, CategoryDto.class)).collect(Collectors.toList());
+    public ApiResponse<CategoryDto> getAllCategories(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Category> categories = categoryRepository.findAll(pageable);
+        List<Category> listOfCategories = categories.getContent();
+        List<CategoryDto> content = listOfCategories.stream().map(c -> modelMapper.map(c, CategoryDto.class)).toList();
+        return getApiResponse(pageNo, pageSize, content, categories);
     }
 
     @Override

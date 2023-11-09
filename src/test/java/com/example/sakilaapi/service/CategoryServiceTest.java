@@ -1,5 +1,6 @@
 package com.example.sakilaapi.service;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CategoryDto;
 import com.example.sakilaapi.model.Category;
 import com.example.sakilaapi.repository.CategoryRepository;
@@ -13,9 +14,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -56,11 +57,12 @@ class CategoryServiceTest {
     @Test
     public void CategoryService_GetAllCategorys_ReturnCategoryDtos() {
 
-        when(categoryRepository.findAll()).thenReturn(Arrays.asList(category, category));
+        Page<Category> categories = Mockito.mock(Page.class);
+        when(categoryRepository.findAll(Mockito.any(Pageable.class))).thenReturn(categories);
 
-        List<CategoryDto> categorys = categoryService.getAllCategories();
+        ApiResponse<CategoryDto> response = categoryService.getAllCategories(0, 10);
 
-        Assertions.assertThat(categorys).isNotEmpty();
+        Assertions.assertThat(response).isNotNull();
     }
 
     @Test

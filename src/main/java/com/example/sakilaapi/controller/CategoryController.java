@@ -1,13 +1,12 @@
 package com.example.sakilaapi.controller;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CategoryDto;
 import com.example.sakilaapi.service.CategoryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,8 +20,9 @@ public class CategoryController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<CategoryDto>> getAllCategories() {
-        return new ResponseEntity<>(categoryService.getAllCategories(), HttpStatus.OK);
+    public ResponseEntity<ApiResponse<CategoryDto>> getAllCategories(@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                                                     @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        return new ResponseEntity<>(categoryService.getAllCategories(pageNo, pageSize), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

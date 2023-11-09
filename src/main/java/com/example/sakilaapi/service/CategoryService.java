@@ -1,13 +1,12 @@
 package com.example.sakilaapi.service;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CategoryDto;
-
-import java.util.List;
 
 public interface CategoryService {
     CategoryDto createCategory(CategoryDto categoryDto);
 
-    List<CategoryDto> getAllCategories();
+    ApiResponse<CategoryDto> getAllCategories(int pageNo, int pageSize);
 
     CategoryDto getCategoryById(Long id);
 

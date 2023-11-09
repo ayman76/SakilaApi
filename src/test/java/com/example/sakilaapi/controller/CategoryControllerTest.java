@@ -1,5 +1,6 @@
 package com.example.sakilaapi.controller;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CategoryDto;
 import com.example.sakilaapi.service.CategoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,9 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -44,10 +43,19 @@ class CategoryControllerTest {
     private ObjectMapper objectMapper;
     private CategoryDto categoryDto;
 
+    private ApiResponse<CategoryDto> responseDto;
+
 
     @BeforeEach
     public void setup() {
+        responseDto = new ApiResponse<>();
         categoryDto = CategoryDto.builder().category_id(1L).name("category").build();
+        responseDto.setContent(Arrays.asList(categoryDto, categoryDto));
+        responseDto.setPageSize(10);
+        responseDto.setPageNo(0);
+        responseDto.setTotalPages(10);
+        responseDto.setTotalElements(100L);
+        responseDto.setLast(false);
     }
 
     @Test
@@ -61,12 +69,15 @@ class CategoryControllerTest {
 
     @Test
     public void CategoryController_GetAllCategorys_ReturnIsOk() throws Exception {
-        List<CategoryDto> categoryDtos = new ArrayList<>(Arrays.asList(categoryDto, categoryDto));
-        when(categoryService.getAllCategories()).thenReturn(categoryDtos);
+        when(categoryService.getAllCategories(Mockito.anyInt(), Mockito.anyInt())).thenReturn(responseDto);
 
-        ResultActions response = mockMvc.perform(get(URL).contentType(MediaType.APPLICATION_JSON));
+        ResultActions response = mockMvc.perform(get(URL)
+                .contentType(MediaType.APPLICATION_JSON)
+                .param("pageNo", "0")
+                .param("pageSize", "10"));
 
-        response.andExpect(MockMvcResultMatchers.status().isOk()).andExpect(MockMvcResultMatchers.jsonPath("$.size()", CoreMatchers.is(categoryDtos.size()))).andDo(MockMvcResultHandlers.print());
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content.size()", CoreMatchers.is(responseDto.getContent().size()))).andDo(MockMvcResultHandlers.print());
     }
 
     @Test
