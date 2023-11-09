@@ -1,15 +1,20 @@
 package com.example.sakilaapi.service.impl;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.LanguageDto;
 import com.example.sakilaapi.model.Language;
 import com.example.sakilaapi.repository.LanguageRepository;
 import com.example.sakilaapi.service.LanguageService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.example.sakilaapi.utils.HelperFunctions.getApiResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +30,12 @@ public class LanguageServiceImpl implements LanguageService {
     }
 
     @Override
-    public List<LanguageDto> getAllLanguages() {
-        return languageRepository.findAll().stream().map(c -> modelMapper.map(c, LanguageDto.class)).collect(Collectors.toList());
+    public ApiResponse<LanguageDto> getAllLanguages(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Language> languages = languageRepository.findAll(pageable);
+        List<Language> listOfLanguages = languages.getContent();
+        List<LanguageDto> content = listOfLanguages.stream().map(c -> modelMapper.map(c, LanguageDto.class)).toList();
+        return getApiResponse(pageNo, pageSize, content, languages);
     }
 
     @Override

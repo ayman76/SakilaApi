@@ -1,13 +1,12 @@
 package com.example.sakilaapi.service;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.LanguageDto;
-
-import java.util.List;
 
 public interface LanguageService {
     LanguageDto createLanguage(LanguageDto languageDto);
 
-    List<LanguageDto> getAllLanguages();
+    ApiResponse<LanguageDto> getAllLanguages(int pageNo, int pageSize);
 
     LanguageDto getLanguageById(Long id);
 

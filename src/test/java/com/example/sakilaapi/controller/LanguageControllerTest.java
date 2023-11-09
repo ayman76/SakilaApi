@@ -1,5 +1,6 @@
 package com.example.sakilaapi.controller;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.LanguageDto;
 import com.example.sakilaapi.service.LanguageService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,9 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -44,10 +43,19 @@ class LanguageControllerTest {
     private ObjectMapper objectMapper;
     private LanguageDto languageDto;
 
+    private ApiResponse<LanguageDto> responseDto;
+
 
     @BeforeEach
     public void setup() {
+        responseDto = new ApiResponse<>();
         languageDto = LanguageDto.builder().language_id(1L).name("language").build();
+        responseDto.setContent(Arrays.asList(languageDto, languageDto));
+        responseDto.setPageSize(10);
+        responseDto.setPageNo(0);
+        responseDto.setTotalPages(10);
+        responseDto.setTotalElements(100L);
+        responseDto.setLast(false);
     }
 
     @Test
@@ -62,13 +70,15 @@ class LanguageControllerTest {
 
     @Test
     public void LanguageController_GetAllLanguages_ReturnIsOk() throws Exception {
-        List<LanguageDto> languageDtos = new ArrayList<>(Arrays.asList(languageDto, languageDto));
-        when(languageService.getAllLanguages()).thenReturn(languageDtos);
 
-        ResultActions response = mockMvc.perform(get(URL).contentType(MediaType.APPLICATION_JSON));
+        when(languageService.getAllLanguages(Mockito.anyInt(), Mockito.anyInt())).thenReturn(responseDto);
+
+        ResultActions response = mockMvc.perform(get(URL).contentType(MediaType.APPLICATION_JSON)
+                .param("pageNo", "0")
+                .param("pageSize", "10"));
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", CoreMatchers.is(languageDtos.size())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content.size()", CoreMatchers.is(responseDto.getContent().size())))
                 .andDo(MockMvcResultHandlers.print());
     }
 
