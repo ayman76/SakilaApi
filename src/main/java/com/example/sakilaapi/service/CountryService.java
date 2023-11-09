@@ -1,13 +1,12 @@
 package com.example.sakilaapi.service;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CountryDto;
-
-import java.util.List;
 
 public interface CountryService {
     CountryDto createCountry(CountryDto countryDto);
 
-    List<CountryDto> getAllCountries();
+    ApiResponse<CountryDto> getAllCountries(int pageNo, int pageSize);
 
     CountryDto getCountryById(Long id);
 

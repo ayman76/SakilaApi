@@ -1,15 +1,20 @@
 package com.example.sakilaapi.service.impl;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CountryDto;
 import com.example.sakilaapi.model.Country;
 import com.example.sakilaapi.repository.CountryRepository;
 import com.example.sakilaapi.service.CountryService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+
+import static com.example.sakilaapi.utils.HelperFunctions.getApiResponse;
 
 @Service
 @RequiredArgsConstructor
@@ -25,8 +30,12 @@ public class CountryServiceImpl implements CountryService {
     }
 
     @Override
-    public List<CountryDto> getAllCountries() {
-        return countryRepository.findAll().stream().map(c -> modelMapper.map(c, CountryDto.class)).collect(Collectors.toList());
+    public ApiResponse<CountryDto> getAllCountries(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize);
+        Page<Country> countries = countryRepository.findAll(pageable);
+        List<Country> listOfCountries = countries.getContent();
+        List<CountryDto> content = listOfCountries.stream().map(c -> modelMapper.map(c, CountryDto.class)).toList();
+        return getApiResponse(pageNo, pageSize, content, countries);
     }
 
     @Override

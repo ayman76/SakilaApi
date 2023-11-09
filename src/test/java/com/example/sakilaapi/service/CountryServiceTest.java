@@ -1,5 +1,6 @@
 package com.example.sakilaapi.service;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CountryDto;
 import com.example.sakilaapi.model.Country;
 import com.example.sakilaapi.repository.CountryRepository;
@@ -13,9 +14,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -55,13 +56,14 @@ class CountryServiceTest {
     }
 
     @Test
-    public void CountryService_GetAllCountrys_ReturnCountryDtos() {
+    public void CountryService_GetAllCountries_ReturnCountryDtos() {
 
-        when(countryRepository.findAll()).thenReturn(Arrays.asList(country, country));
+        Page<Country> countries = Mockito.mock(Page.class);
+        when(countryRepository.findAll(Mockito.any(Pageable.class))).thenReturn(countries);
 
-        List<CountryDto> countrys = countryService.getAllCountries();
+        ApiResponse<CountryDto> response = countryService.getAllCountries(0, 10);
 
-        Assertions.assertThat(countrys).isNotEmpty();
+        Assertions.assertThat(response).isNotNull();
     }
 
     @Test

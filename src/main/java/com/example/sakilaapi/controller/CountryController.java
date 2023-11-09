@@ -1,13 +1,12 @@
 package com.example.sakilaapi.controller;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CountryDto;
 import com.example.sakilaapi.service.CountryService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,8 +20,9 @@ public class CountryController {
     }
 
     @GetMapping("")
-    public ResponseEntity<List<CountryDto>> getAllCategories() {
-        return new ResponseEntity<>(countryService.getAllCountries(), HttpStatus.OK);
+    public ResponseEntity<ApiResponse<CountryDto>> getAllCategories(@RequestParam(value = "pageNo", defaultValue = "0", required = false) int pageNo,
+                                                                    @RequestParam(value = "pageSize", defaultValue = "10", required = false) int pageSize) {
+        return new ResponseEntity<>(countryService.getAllCountries(pageNo, pageSize), HttpStatus.OK);
     }
 
     @GetMapping("/{id}")

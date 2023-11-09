@@ -1,5 +1,6 @@
 package com.example.sakilaapi.controller;
 
+import com.example.sakilaapi.dto.ApiResponse;
 import com.example.sakilaapi.dto.CountryDto;
 import com.example.sakilaapi.service.CountryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,9 +20,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -43,11 +42,19 @@ class CountryControllerTest {
     @Autowired
     private ObjectMapper objectMapper;
     private CountryDto countryDto;
+    private ApiResponse<CountryDto> responseDto;
 
 
     @BeforeEach
     public void setup() {
+        responseDto = new ApiResponse<>();
         countryDto = CountryDto.builder().country_id(1L).country("country").build();
+        responseDto.setContent(Arrays.asList(countryDto, countryDto));
+        responseDto.setPageSize(10);
+        responseDto.setPageNo(0);
+        responseDto.setTotalPages(10);
+        responseDto.setTotalElements(100L);
+        responseDto.setLast(false);
     }
 
     @Test
@@ -62,13 +69,14 @@ class CountryControllerTest {
 
     @Test
     public void CountryController_GetAllCountrys_ReturnIsOk() throws Exception {
-        List<CountryDto> countryDtos = new ArrayList<>(Arrays.asList(countryDto, countryDto));
-        when(countryService.getAllCountries()).thenReturn(countryDtos);
+        when(countryService.getAllCountries(Mockito.anyInt(), Mockito.anyInt())).thenReturn(responseDto);
 
-        ResultActions response = mockMvc.perform(get(URL).contentType(MediaType.APPLICATION_JSON));
+        ResultActions response = mockMvc.perform(get(URL).contentType(MediaType.APPLICATION_JSON)
+                .param("pageNo", "0")
+                .param("pageSize", "10"));
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", CoreMatchers.is(countryDtos.size())))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.content.size()", CoreMatchers.is(responseDto.getContent().size())))
                 .andDo(MockMvcResultHandlers.print());
     }
 
