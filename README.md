@@ -9,6 +9,11 @@ It has been recently developed following RESTful principles, offering versatile 
 
 https://documenter.getpostman.com/view/26688798/2s9YXia2bb
 
+## Can be run as a Jar or a WAR
+```bash
+maven clean install
+```
+
 
 ## Get Started
 
