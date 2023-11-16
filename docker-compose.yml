@@ -1,0 +1,40 @@
+version: '3.8'
+
+services:
+  sakila-app:
+    image: sakila-rest-api
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysqldb
+    environment:
+      RDS_HOSTNAME: mysqldb
+      RDS_PORT: 3306
+      RDS_DBNAME: sakila
+      RDS_USERNAME: user
+      RDS_PASSWORD: password
+    networks:
+      - sakila-app-network
+
+  mysqldb:
+    image: mysql:latest
+    ports:
+      - "3307:3306"
+    restart: always
+    environment:
+      MYSQL_DATABASE: sakila
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    volumes:
+      - mysql-database-data-volume:/var/lib/mysql
+    networks:
+      - sakila-app-network
+
+
+volumes:
+  mysql-database-data-volume:
+networks:
+  sakila-app-network:
+
+
